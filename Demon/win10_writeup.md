@@ -64,7 +64,7 @@ API 가 다 숨어있고 루틴도 다 깨져서 더 이상 동적 정보 없이
     <code>
         key는 총 16 bytes. let 첫 8글자를 A, let 뒤 8 글자를 B
         crc64(A + 임의의 8바이트) = 특정해쉬, A 의 각 문자들의 int 합 0x2dc, blowfish_decrypt(B, key) = 값
-        * crc64 table 를 생성하는 poly 값은 0xdeadbeefcafebabe
+        * crc64 table 를 생성하는 poly 값은 0xcafebebedeadbeef
         * blowfish key 를 구성할 때 쓰이는 값은 blowfish algorithm s-box 배열 부분 앞에 ulong 2개 값 (기억으론..?)
         * 임의의 8바이트라는게 고거시... rand()%256 으로 gen 이 되는디. 아까 봤듯이 **seed(100)** 뙇
     </code>
@@ -95,11 +95,12 @@ API 가 다 숨어있고 루틴도 다 깨져서 더 이상 동적 정보 없이
 
 해당 문장과 함께 2.5초 뒤에 플그램이 꺼지면서 프로그램과 같은 폴더에 asdf란 파일이 생기는데,
 hexeditor 로 magic number 를 보면 7z 파일이라 카더라... 압축풀면 아래와 같은 화면을 볼 수 있따.
+> 엌 참고로 파일은 rc6 으로 encrypt 되어 있었나 부다.. 마지막에 rc6 decrypt 하는 듯 ㅇㅅㅇ
+
 > ![끗](https://github.com/kozistr/whitehat-league-1/blob/master/image/done.png)
 쨕쨕쨕
 
 ### 3. Solver
-> un-crc64 부분은 어디선가 구한 sage code 가 있길래 쵸금 바꿔봤다
 <pre>
     <code>
 import sys, string
