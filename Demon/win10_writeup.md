@@ -89,9 +89,9 @@ API 가 다 숨어있고 루틴도 다 깨져서 더 이상 동적 정보 없이
 그런데 이 프로그램은 win xp 비호환으로 컴파일 되서 only for win10 이 되는거 같다.~~아님 말~고 ㅎㅎㅎㅎㅎㅎ~~<br/>
 
 (위 5번으로 올라가셈) (다보고 내려오셈)
-> 해당 스크립트를 돌리면 아래와 같은 화면을 볼 수 있다.
-> ![실행](https://github.com/kozistr/whitehat-league-1/blob/master/image/correct.png)
-(위 사진과 경로가 다른 건 무시해 주자 ㅎ)
+> 해당 스크립트를 돌리면 아래와 같은 화면을 볼 수 있다.<br/>
+> ![실행](https://github.com/kozistr/whitehat-league-1/blob/master/image/correct.png)<br/>
+(위 사진과 경로가 다른 건 무시해 주자 ㅎ)<br/>
 
 해당 문장과 함께 2.5초 뒤에 플그램이 꺼지면서 프로그램과 같은 폴더에 asdf란 파일이 생기는데,
 hexeditor 로 magic number 를 보면 7z 파일이라 카더라... 압축풀면 아래와 같은 화면을 볼 수 있따.
@@ -100,8 +100,7 @@ hexeditor 로 magic number 를 보면 7z 파일이라 카더라... 압축풀면 
 
 ### 3. Solver
 > un-crc64 부분은 어디선가 구한 sage code 가 있길래 쵸금 바꿔봤다
-<pre>
-    <code>
+'''python
 import sys, string
 from itertools import product
 from multiprocessing.pool import Pool
@@ -243,7 +242,5 @@ p.map(uncrc64, charset)
 [+] Reversed crc64 : 0x38705a3e0b3ca4d3L
 [+] Rank is 28
 [+] Got :  bleWF1sh 0x38705a3e0b3ca4d3L
-...
 '''
-    </code>
-</pre>
+'''
