@@ -49,7 +49,7 @@ TLS 초반에 PEB->LDR 가서 궁시렁 거리는 부분 있 ㅇㅇ
 
 > 4. 킾킾킾 고잉
 > ![킾 고잉](https://github.com/kozistr/whitehat-league-1/blob/master/image/gopher.png)
-<br/>이제 main 함수를 보면, 초반부터 장난질이다;;
+- main 함수를 보면, 초반부터 장난질이다;;
 - top exception handler 걸어두고 divide by zero 예외를 일부러 발생 시키고, 그 등록한 핸들러에서 EIP 를 몇 바이트 점프해 버리기!
 요로코롬 따라가다 보면 뭐 몇 가지를 세팅하는데
 - **blowfish key 도 세팅**하고 **crc64** 에 대한 **poly 값**도 세팅을 한다.
@@ -57,9 +57,21 @@ TLS 초반에 PEB->LDR 가서 궁시렁 거리는 부분 있 ㅇㅇ
 API 가 다 숨어있고 루틴도 다 깨져서 더 이상 동적 정보 없이 진행에 무리데스...
 
 > 5. 후.. 동적 분석 하고 왔다.. (질문은...안받고 진행함)
-<br/>갔다왔는데 콘솔에 쓰는 문자열들도 다 암호화가 되어 있고 API도 다 암호화가 되어 있는데, 다행이 API 이름들은 **xor 0xcc** 로 복호화가 된다.
+- 갔다왔는데 콘솔에 쓰는 문자열들도 다 암호화가 되어 있고 API도 다 암호화가 되어 있는데, 다행이 API 이름들은 **xor 0xcc** 로 복호화가 된다.
 - 콘솔에 쓰이는 문자열들은 그 아까 blowfish key 생성도 한다 했는데 그 키를 기반으로 **복호화 작업**을 한다.
-그 주변 살펴보면 뭔가 키 인증 뭐시기 루틴이 있는데 정리하면 아래와 같다.
+- 그 주변 살펴보면 뭔가 키 인증 뭐시기 루틴이 있는데 정리하면 아래와 같다.
+<pre>
+    <code>
+        key는 총 16 bytes. let 첫 8글자를 A, let 뒤 8 글자를 B
+        crc64(A + 임의의 8바이트) = 특정해쉬, A 의 각 문자들의 int 합 0x2dc, blowfish_decrypt(B, key) = 값
+        * crc64 table 를 생성하는 poly 값은 0xdeadbeefcafebabe
+        * blowfish key 를 구성할 때 쓰이는 값은 blowfish algorithm s-box 배열 부분 앞에 ulong 2개 값 (기억으론..?)
+        * 임의의 8바이트라는게 고거시... rand()%256 으로 gen 이 되는디. 아까 봤듯이 **seed(100)** 뙇
+    </code>
+</pre>
+- crc64 테이블 및 엘고뤼듬에 대해선 한 번에 64bit len을 가지는 값들로 이뤄져서 **설계상 reverse 를 할 수가 있다.**
+- 또한 stream 특성 때문에 **약간의 brute-force와 함께 un-crc64** 도 가능하다
+이제 풀러 가자~ 아래로~
 
 ### 2. Dynamic Analysis ~~그냥 멋있어 보이는 단어 써 봤다 다이눼~믹~~
 프로그램을 걍 실행해보면 Input : 이란 문자열이 콘솔에 뜨는데 뭘 입력하면 Wrong :( 가 뜨고 몇 초뒤에 종료가 된다.
@@ -76,4 +88,162 @@ API 가 다 숨어있고 루틴도 다 깨져서 더 이상 동적 정보 없이
 디버깅 중이 아닐 때 임의의 인자와 함께 실행을 하면 **win10, xp 에서는 1, vista, 7 에서는 0을 리턴**한다.<br/>
 그런데 이 프로그램은 win xp 비호환으로 컴파일 되서 only for win10 이 되는거 같다.~~아님 말~고 ㅎㅎㅎㅎㅎㅎ~~<br/>
 
-(위 5번으로 올라가셈)
+(위 5번으로 올라가셈) (다보고 내려오셈)
+> 해당 스크립트를 돌리면 아래와 같은 화면을 볼 수 있다.
+> ![실행](https://github.com/kozistr/whitehat-league-1/blob/master/image/correct.png)
+(위 사진과 경로가 다른 건 무시해 주자 ㅎ)
+
+해당 문장과 함께 2.5초 뒤에 플그램이 꺼지면서 프로그램과 같은 폴더에 asdf란 파일이 생기는데,
+hexeditor 로 magic number 를 보면 7z 파일이라 카더라... 압축풀면 아래와 같은 화면을 볼 수 있따.
+> ![끗](https://github.com/kozistr/whitehat-league-1/blob/master/image/done.png)
+쨕쨕쨕
+
+### 3. Solver
+> un-crc64 부분은 어디선가 구한 sage code 가 있길래 쵸금 바꿔봤다
+<pre>
+    <code>
+import sys, string
+from itertools import product
+from multiprocessing.pool import Pool
+
+from sage.all import *
+
+
+def crc64table(table, poly):
+    for i in range(256):
+        crc = i
+        for j in range(8):
+            if crc & 1:
+                crc >>= 1
+                crc ^= poly
+            else:
+                crc >>= 1
+        table[i] = crc
+
+
+def crc64(str, crc_=0):
+    crc = crc_
+    for c in str:
+        crc = table[(crc & 0xff) ^ ord(c)] ^ (crc >> 8)
+    return long(crc)
+
+
+# decrypt key  : 0x62, 0x6c, 0x65, 0x57, 0x46, 0x31, 0x73, 0x68, 0x42, 0x6c, 0x30, 0x77, 0x66, 0x69, 0x73, 0x68
+
+# poly64 value : 0xcafebebedeadbeef                             # which is hidden(packed) in the program
+# origin       : 0x62, 0x6c, 0x65, 0x57, 0x46, 0x31, 0x73, 0x68 # sum : 0x2dc
+# salt         : 0xc0, 0x27, 0x40, 0xb8, 0xf6, 0x7a, 0xa6, 0xa9 # with rand() % 256
+
+origin_salt = "0x62, 0x6c, 0x65, 0x57, 0x46, 0x31, 0x73, 0x68, 0xc0, 0x27, 0x40, 0xb8, 0xf6, 0x7a, 0xa6, 0xa9"
+origin_salt = origin_salt.replace('0x', '').replace(',', '').replace(' ', '').decode('hex')
+
+# Step 1 : Generating crc64 table with the specific poly64 value
+table = [0] * 256
+crc64table(table, 0xcafebebedeadbeef)
+
+# Step 2 : Generating crc64 un-table
+untable = [0] * 256
+for i in range(256):
+    untable[(crc64(chr(i)) & 0xffffffffffffffff) >> 56] = (crc64(chr(i)) & 0xffffffffffffffff)
+
+org_crc = crc64(origin_salt)
+print("[+] Original crc64 Value : " + hex(org_crc))
+
+# Step 3 : reverse-crc64 with the known 8 bytes we've got from the 'rand() % 256'
+for i in range(len(origin_salt) - 1, 8 - 1, -1):
+    v = org_crc >> 56
+    org_crc = ((org_crc ^ untable[v]) << 8) | (table.index(untable[v]) ^ ord(origin_salt[i]))
+
+# Step (3-1) : Verifying crc64(origin)
+tmp = ""
+for j in origin_salt[:8]:  # origin
+    tmp += j
+    print("[*] pure value : " + hex(crc64(tmp)))
+
+# Step (3-2) : Verifying reversed org_salt crc64
+print("[+] Reversed crc64 : " + hex(org_crc))
+
+assert org_crc == crc64(tmp)
+
+# Stage 4 : uncrc64 process
+N = 8   # number of string
+M = MatrixSpace(GF(2), 64, N * 7)
+V = VectorSpace(GF(2), 64)
+
+nBF = 4
+
+charset = string.lowercase + string.uppercase + string.digits  # a-zA-Z0-9
+
+base = crc64("\x00" * N)
+
+diffs = {}
+for i in range(N):
+    for j in range(7):
+        key = [0] * N
+        key[i] |= (1 << j)
+        diffs[i, j] = crc64(''.join(map(chr, key))) ^ base
+
+matrix = M()
+for (i, j), vec in diffs.items():
+    if i < nBF:
+        continue
+    column = i * 7 + j
+    for row in range(64):
+        matrix[row, column] = (vec & (1 << row)) >> row
+
+
+diff_mas = org_crc ^ base
+
+
+def uncrc64(first_charset):
+    lst = [map(ord, l) for l in [first_charset] + [charset] * (nBF - 1)]
+
+    for prefix in product(*lst):
+        diff = diff_mas
+        for i in range(nBF):
+            for j in range(7):
+                if prefix[i] & (1 << j):
+                    diff ^= diffs[i, j]
+                continue
+
+        resvec = V([(diff & (1 << row)) >> row for row in range(64)])
+
+        try:
+            x = matrix.solve_right(resvec)
+        except ValueError:
+            continue
+
+        s = [0] * N
+        for i, v in enumerate(x):
+            i, j = divmod(i, 7)
+            if v or (i < nBF and prefix[i] & (1 << j)):
+                s[i] |= (1 << j)
+
+        if sum(s) == 0x2dc:
+            key = ''.join(map(chr, s))
+            if set(key).issubset(set(charset)):
+                print("[+] Got :", key, hex(crc64(key)))
+
+
+workers = 32
+
+p = Pool(workers)
+p.map(uncrc64, charset)
+
+'''
+[+] Original crc64 Value  : 0x9f6f42e2fcd96a45L
+[*] pure value : 0x984241410bdfd52fL
+[*] pure value : 0x35e5e5667de886e4L
+[*] pure value : 0x30344dcd57116abbL
+[*] pure value : 0xe779077e89711a14L
+[*] pure value : 0xe485b0cec1d5cc9fL
+[*] pure value : 0x282f073259c5bb51L
+[*] pure value : 0x37eb8fa7887d710cL
+[*] pure value : 0x38705a3e0b3ca4d3L
+[+] Reversed crc64 : 0x38705a3e0b3ca4d3L
+[+] Rank is 28
+[+] Got :  bleWF1sh 0x38705a3e0b3ca4d3L
+...
+'''
+    </code>
+</pre>
