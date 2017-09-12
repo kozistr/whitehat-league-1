@@ -29,7 +29,11 @@ Win10 Write-Up - 출제자 풀이
 -   아마 어딘가에서 API Logger 같은 부분이 있을거라 추측해봄, ~~아님 말고..~~
 > 2. 정리 쪼까 해보면
 - upx 는 뭔가 아녀 보이고, custom packer 적용 가능성도 보이지만 아닌거 같다
-- 비슷한 성격을 띄는 게 vmp protector 정도? (흠.. MessageBoxA가 보였었나...)
+- 비슷한 성격을 띄는 게 vmp 정도? (*흠.. MessageBoxA가 보였었나...*)
 
-실제로 열어보면 바이너리는 packer로 packed 되지 않은거 같고, EP(0x040473C) 부분이 MSCV 컴파일러 EP 부분과 비슷한데,
-뭔가 프로텍팅 되어있는 거 같다. 아마 VMProtect 2.x 버전을 사용한 듯 ㅇㅇ... 는 아닌거 같고 fake signature 같다.
+실제로 열어보면 바이너리는 packer로 packed 되지 않은거 같고
+EP(0x040473C) 부분이 MSCV 컴파일러 EP 부분과 비슷한데 뭔가 프로텍팅 되어있는 거 같다.
+아마 *VMProtect 2.x*을 사용한 듯 ㅇㅇ... 는 아닌거 같고 fake signature 같따
+~~아 배고파~~
+
+> 3. 킾 고잉 (/image/gopher.jpg)
