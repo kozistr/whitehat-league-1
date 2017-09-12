@@ -36,4 +36,4 @@ EP(0x040473C) 부분이 MSCV 컴파일러 EP 부분과 비슷한데 뭔가 프�
 아마 *VMProtect 2.x*을 사용한 듯 ㅇㅇ... 는 아닌거 같고 fake signature 같따
 ~~아 배고파~~
 
-> 3. 킾 고잉 (/image/gopher.jpg)
+> 3. 킾 고잉 (https://github.com/kozistr/Awesome-GANs/blob/master/image/gopher.jpg)
