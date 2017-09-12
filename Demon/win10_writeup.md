@@ -36,4 +36,13 @@ EP(0x040473C) 부분이 MSCV 컴파일러 EP 부분과 비슷한데 뭔가 프�
 아마 *VMProtect 2.x*을 사용한 듯 ㅇㅇ... 는 아닌거 같고 fake signature 같따
 ~~아 배고파~~
 
-> 3. 킾 고잉 (https://github.com/kozistr/whitehat-league-1/blob/master/image/gopher.png)
+> 3. ![킾 고잉](https://github.com/kozistr/whitehat-league-1/blob/master/image/gopher.png)
+- 음.. sub_4042CE(main) 여기가 메인 함수다.
+어떻게 찾았냐? start 따라가보셈 고럼 main 있어야할 곳에 main 있당께
+- 아까 TLS 섹션도 존재했는데 이거는 특정 버전의 vmp 프로텍팅 옵션으로 생긴 TLS가 아닌거 같다. (~~고놈의 프로텍터 미련...~~)
+간략하게 TLS 섹션 분석한 걸 나열하면
+1. API Logger 존재 (kernel32.dll)
+TLS 초반에 PEB->LDR 가서 궁시렁 거리는 부분 있 ㅇㅇ
+2. 매 API 실행 전까지 API Address Encrypt/Decrypt
+seed(100) 해서 각 API끼리 xor xor xor xor ... 함, 고러고 API call 직전 즘에 또 돌려서 주소 복원데스
+3. Anti-Dump 및 여러 기법 적용됨
