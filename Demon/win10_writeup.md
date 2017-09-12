@@ -100,7 +100,8 @@ hexeditor 로 magic number 를 보면 7z 파일이라 카더라... 압축풀면 
 
 ### 3. Solver
 > un-crc64 부분은 어디선가 구한 sage code 가 있길래 쵸금 바꿔봤다
-'''python
+<pre>
+    <code>
 import sys, string
 from itertools import product
 from multiprocessing.pool import Pool
@@ -243,4 +244,6 @@ p.map(uncrc64, charset)
 [+] Rank is 28
 [+] Got :  bleWF1sh 0x38705a3e0b3ca4d3L
 '''
-'''
+    </code>
+</pre>
+
