@@ -36,7 +36,7 @@ EP(0x040473C) 부분이 MSCV 컴파일러 EP 부분과 비슷한데 뭔가 프�
 아마 *VMProtect 2.x*을 사용한 듯 ㅇㅇ... 는 아닌거 같고 fake signature 같따
 ~~아 배고파~~
 
-> 3. TLS 킾 고잉 ![킾 고잉](https://github.com/kozistr/whitehat-league-1/blob/master/image/gopher.png)
+> 3. TLS 킾 고잉
 - 음.. sub_4042CE(main) 여기가 메인 함수다.
 어떻게 찾았냐? start 따라가보셈 고럼 main 있어야할 곳에 main 있당께
 - 아까 TLS 섹션도 존재했는데 이거는 특정 버전의 vmp 프로텍팅 옵션으로 생긴 TLS가 아닌거 같다. (~~고놈의 프로텍터 미련...~~)
@@ -47,24 +47,33 @@ TLS 초반에 PEB->LDR 가서 궁시렁 거리는 부분 있 ㅇㅇ
 **seed(100)** 해서 각 API 끼리 xor xor xor xor ... 함, 고러고 API call 직전 즘에 또 돌려서 주소 복원데스
 3. Anti-Dump 및 여러 기법 적용됨 (고런데 Anti-Injection 이 없다! 아직 모른다 ㅁㄴㅇㄹ)
 
-> 4. 킾킾킾 고잉 ![킾 고잉](https://github.com/kozistr/whitehat-league-1/blob/master/image/gopher.png)<br/>
-이제 main 함수를 보면, 초반부터 장난질이다;;
+> 4. 킾킾킾 고잉
+> ![킾 고잉](https://github.com/kozistr/whitehat-league-1/blob/master/image/gopher.png)
+<br/>이제 main 함수를 보면, 초반부터 장난질이다;;
 - top exception handler 걸어두고 divide by zero 예외를 일부러 발생 시키고, 그 등록한 핸들러에서 EIP 를 몇 바이트 점프해 버리기!
 요로코롬 따라가다 보면 뭐 몇 가지를 세팅하는데
 - **blowfish key 도 세팅**하고 **crc64** 에 대한 **poly 값**도 세팅을 한다.
 - (어떻게 알았냐면 crc64 알고리즘은 보면 뙇이고 blowfish는 krypton.py 라는 ida **플러그인** 하고 PeID의 **플러그인**)
 API 가 다 숨어있고 루틴도 다 깨져서 더 이상 동적 정보 없이 진행에 무리데스...
 
-### 2. Dynamic Analysis
+> 5. 후.. 동적 분석 하고 왔다.. (질문은...안받고 진행함)
+<br/>갔다왔는데 콘솔에 쓰는 문자열들도 다 암호화가 되어 있고 API도 다 암호화가 되어 있는데, 다행이 API 이름들은 **xor 0xcc** 로 복호화가 된다.
+- 콘솔에 쓰이는 문자열들은 그 아까 blowfish key 생성도 한다 했는데 그 키를 기반으로 **복호화 작업**을 한다.
+그 주변 살펴보면 뭔가 키 인증 뭐시기 루틴이 있는데 정리하면 아래와 같다.
+
+### 2. Dynamic Analysis ~~그냥 멋있어 보이는 단어 써 봤다 다이눼~믹~~
 프로그램을 걍 실행해보면 Input : 이란 문자열이 콘솔에 뜨는데 뭘 입력하면 Wrong :( 가 뜨고 몇 초뒤에 종료가 된다.
 > ![실행](https://github.com/kozistr/whitehat-league-1/blob/master/image/just-run.png)
 ~~Anti-Reversing Bypass 를 하 다는 짓은 귀찮으니.. 최대한 미루자!~~
-1. 일단 입출력과 딜레이가 있다는 건 printf, scanf 가 없으니 WriteConsoleA, ReadConsoleA, Sleep 이 숨어져 있다는 거고
-2. TLS 에서 얻은 정보로 찾아보면 입출력 부분을 찾을 수 있었다.
-3. IDA나 다른 디버깅 툴의 안티디버깅 bypass 플러그인 옵션을 다 키고 진행했는데도 여러 부분에서 막혀서 일단 API 정보를 얻은 것 만으로 다시 정적 진행을 해야겠다.
-음.. 사용된 기법들 찾은 것도 알아냈지만 여백이 부족해 생략을… 읍읍
+1. 일단 입출력과 딜레이가 있다는 건 printf, scanf 가 없으니 *WriteConsoleA, ReadConsoleA, Sleep* 이 숨어져 있다는 거고
+2. TLS 에서 얻은 정보로 찾아보면 입출력 부분을 찾을 수 있었다. (**고거 근처에 핵심 연산도 있었따! 요거 완전 9reat**)
+3. IDA나 다른 디버깅 툴의 안티디버깅 bypass 플러그인 옵션을 다 키고 진행했는데도 여러 부분에서 막혀서 일단 **API 정보**를 얻은 것 만으로 다시 정적 진행을 해야겠다.
+음.. 사용된 기법들 찾은 것도 알아냈지만 **여백이 부족해 생략**을… 읍읍  **9reat**
+- 다시 3인칭 제작자 관점서 서술하자면 아마 못 봤을만 한 기법 넣어버렸따리
 
 > 아 하나 추가하자면 문제 이름이 Win10인 이유를 알아낸 거 같다!
 고거슨 Win10에서만 실행이 가능한데 이유가 OutputDebugString 을 사용해서 OS 를 Detect 하는 부분이 있따.<br/>
 디버깅 중이 아닐 때 임의의 인자와 함께 실행을 하면 **win10, xp 에서는 1, vista, 7 에서는 0을 리턴**한다.<br/>
 그런데 이 프로그램은 win xp 비호환으로 컴파일 되서 only for win10 이 되는거 같다.~~아님 말~고 ㅎㅎㅎㅎㅎㅎ~~<br/>
+
+(위 5번으로 올라가셈)
