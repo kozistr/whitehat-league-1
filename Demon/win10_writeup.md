@@ -138,7 +138,7 @@ def crc64(str, crc_=0):
 origin_salt = "0x62, 0x6c, 0x65, 0x57, 0x46, 0x31, 0x73, 0x68, 0xc0, 0x27, 0x40, 0xb8, 0xf6, 0x7a, 0xa6, 0xa9"
 origin_salt = origin_salt.replace('0x', '').replace(',', '').replace(' ', '').decode('hex')
 
-# Step 1 : Generating crc64 table with the specific poly64 value
+# Step 1 : Generating crc64 table with the poly64 value
 table = [0] * 256
 crc64table(table, 0xcafebebedeadbeef)
 
