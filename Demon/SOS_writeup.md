@@ -17,12 +17,15 @@
 
 ## Solve
 OS를 실행시켜 cmd창을 실행시키면
+
 ![](https://github.com/kozistr/whitehat-league-1/blob/master/image/SOS-1.png)
 
 download를 통해 파일을 넣어줄 수 있습니다.
+
 ![](https://github.com/kozistr/whitehat-league-1/blob/master/image/SOS-2.png)
 
 정적 분석을 통해 해당 메시지를 탐색하면
+
 ![](https://github.com/kozistr/whitehat-league-1/blob/master/image/SOS-3.png)
 
 v7이 데이터의 크기인 듯 하고 데이터의 크기를 4byt로 보낸 뒤 데이터를 보내면 되는 듯 합니다.
@@ -74,7 +77,9 @@ for i in range(4):
         KEY += chr(int(round(x[i][j])))
 print KEY
 ```
+
 이렇게 역연산 코드를 작성 할 수 있습니다.
 
 ![](https://github.com/kozistr/whitehat-league-1/blob/master/image/SOS-8.png)
+
 이렇게 flag가 나옵니다.
