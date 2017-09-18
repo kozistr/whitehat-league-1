@@ -101,8 +101,7 @@ hexeditor 로 magic number 를 보면 7z 파일이라 카더라... 압축풀면 
 쨕쨕쨕
 
 ### 3. Solver
-<pre>
-    <code>
+```python
 import sys, string
 from itertools import product
 from multiprocessing.pool import Pool
@@ -230,21 +229,4 @@ workers = 32
 
 p = Pool(workers)
 p.map(uncrc64, charset)
-
-'''
-[+] Original crc64 Value  : 0x9f6f42e2fcd96a45L
-[*] pure value : 0x984241410bdfd52fL
-[*] pure value : 0x35e5e5667de886e4L
-[*] pure value : 0x30344dcd57116abbL
-[*] pure value : 0xe779077e89711a14L
-[*] pure value : 0xe485b0cec1d5cc9fL
-[*] pure value : 0x282f073259c5bb51L
-[*] pure value : 0x37eb8fa7887d710cL
-[*] pure value : 0x38705a3e0b3ca4d3L
-[+] Reversed crc64 : 0x38705a3e0b3ca4d3L
-[+] Rank is 28
-[+] Got :  bleWF1sh 0x38705a3e0b3ca4d3L
-'''
-    </code>
-</pre>
-
+```
