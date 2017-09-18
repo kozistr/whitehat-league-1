@@ -1,6 +1,6 @@
 # WhiteHat League - Demon CTF
 
-## SOS Write-Up - 출제자 풀이
+## Riddle Write-Up - 출제자 풀이
 
 ## Introduce
 
