@@ -18,21 +18,27 @@
 ## Solve
 OS를 실행시켜 cmd창을 실행시키면
 ![](https://github.com/kozistr/whitehat-league-1/blob/master/image/SOS-1.png)
+
 download를 통해 파일을 넣어줄 수 있습니다.
 ![](https://github.com/kozistr/whitehat-league-1/blob/master/image/SOS-2.png)
+
 정적 분석을 통해 해당 메시지를 탐색하면
 ![](https://github.com/kozistr/whitehat-league-1/blob/master/image/SOS-3.png)
 
 v7이 데이터의 크기인 듯 하고 데이터의 크기를 4byt로 보낸 뒤 데이터를 보내면 되는 듯 합니다.
 당연히 시리얼로 보내야 하니 소스를 만들어 보내면
+
 ![](https://github.com/kozistr/whitehat-league-1/blob/master/image/SOS-4.png)
 
 이렇게 password를 입력하라고 나옵니다.
 해당 문자열을 또 검색하면
 
 ![](https://github.com/kozistr/whitehat-league-1/blob/master/image/SOS-5.png)
+
 이렇게 나오며 해당 분기가 실패하면
+
 ![](https://github.com/kozistr/whitehat-league-1/blob/master/image/SOS-6.png)
+
 이렇게 나오게 됩니다.
 
 ![](https://github.com/kozistr/whitehat-league-1/blob/master/image/SOS-7.png)
