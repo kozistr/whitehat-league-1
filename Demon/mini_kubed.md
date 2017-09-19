@@ -21,8 +21,8 @@ auth 함수를 보면 $flag = decrypt( $flag, 0x7 ); 이부분에서 카이사�
 그래서 auth 부분에 인젝션을 해서 플래그를 뽑아내면 됩니다.<br>
 
 ### Solver
-<pre>
-    <code>
+~~~python
+
 import requests
 
 ret = ''
@@ -53,5 +53,4 @@ for i in range(1, 39 + 1):
 
 print("End result: " + ret)
 print("End decoding result: " + encrypt(ret, 0x7))
-    </code>
-</pre>
+~~~
