@@ -9,9 +9,8 @@ OCR Write-Up - 출제자 풀이
 * Date   : 2017-09-12
 
 ## Intention
-* hex decoding을 할 수 있는가?
-* url decoding을 할 수 있는가?
-* rot13을 할 수 있는가?
+* LFI
+* ~~월척~~ 인가?
 
 * 플래그 형식은 **Demon{...}**
 
